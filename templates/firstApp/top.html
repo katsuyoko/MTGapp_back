@@ -3,8 +3,8 @@
 
     <center>
         <h1 style="margin:0;"> トップです</h1>
-        {% url 'firstApp:logout' as logout %}
-        <input type="button" class="select_button" onclick="location.href='{{logout}}'" value = "Logout"></input>
+        {% url 'firstApp:mail_address' as input_mail %}
+        <input type="button" class="select_button" onclick="location.href='{{input_mail}}'" value = "始めましょう"></input>
 
     </center>
 {% endblock %}

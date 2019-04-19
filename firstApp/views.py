@@ -53,8 +53,32 @@ class Confilm(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         """ POSTのリクエストが来たとき """
         """ 多分メールアドレスが入力されたときの処理になる """
+        
+        form = MailForm()
+        # フォームの内容を取得する
+        # とりあえず適当な奴でやりましょう
+        mail_address = 'example@gmail.com'
+        num_people = 5
 
-        return render(request, 'firstApp/time_display.html', d)
+
+        calender_info = self.get_calender_info(mail_address)
+
+        d = {
+            'mail_address' : mail_address,
+            'num_of_people': num_people,
+            'calender_info': calender_info,
+        }
+
+
+        return render(request, 'firstApp/confilm.html', d)
+
+    def get_calender_info(self, mail_address):
+        # カレンダーの情報を取得する奴
+        pass
+        start = "00:00"
+        end = "01:00"
+
+        return {'start': start, 'end': end}
 
 class TimeDisplay(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):

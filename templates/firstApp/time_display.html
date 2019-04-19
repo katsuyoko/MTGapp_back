@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<center>
+
+<h1>時間だよ</h1>
+
+<h1>お金だよ</h1>
+
+{% url 'firstApp:mail_address' as mail_address %}
+{% url 'firstApp:mail_address' as mail_address %}
+<input type='button' onclick="location.href='{{ mail_address }}'" value='終了'></input>
+
+</center>
+{% endblock %}
