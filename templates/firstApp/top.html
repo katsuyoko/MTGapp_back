@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <center>
-        <h1 style="margin:0;"> トップです</h1>
-        {% url 'firstApp:logout' as logout %}
-        <input type="button" class="select_button" onclick="location.href='{{logout}}'" value = "Logout"></input>
+{% if user.credentials %}
+<p>認証完了!!</p>
+{% else %}
+<p>先に<a href="{% url 'gservice:auth' %}">認証ページ</a>で認証を済ましてください。</p>
+{% endif %}
 
-    </center>
 {% endblock %}
 
 

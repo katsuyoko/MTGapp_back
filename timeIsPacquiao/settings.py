@@ -123,3 +123,22 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_URL = 'firstApp;login'
 LOGIN_REDIRECT_URL = 'firstApp:top'
+
+
+# ダウンロードしたclient_id.jsonのパス
+CLIENT_SECRET = os.path.join(BASE_DIR, 'client_secret_161657128285-7csmtst0naont408qhubs0jj3gh6jmis.apps.googleusercontent.com.json')
+
+# 利用するAPI
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+if DEBUG:
+    # httpの場合、以下の設定が必要
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+    # API Consoleで設定したコールバックURL
+    REDIRECT_URI = 'http://127.0.0.1:8000/callback'
+
+else:
+    # 本番のコールバックURL
+    pass
+

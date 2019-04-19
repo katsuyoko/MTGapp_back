@@ -1,3 +1,7 @@
+import google_auth_oauthlib.flow
+from oauthlib.oauth2 import MissingCodeError
+
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse
@@ -12,11 +16,12 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
 from django.utils.safestring import mark_safe
 
-
 import random
 from datetime import datetime, timedelta
 
 from .forms import *
+from .models import Credentials
+
 
 class Top(LoginRequiredMixin, generic.TemplateView):
     """トップページ"""
@@ -31,35 +36,61 @@ class Logout(LoginRequiredMixin, LogoutView):
     """ログアウトページ"""
     template_name = 'firstApp/logout.html'
 
+@login_required
+def auth(request):
+    # 既に認証済みならトップページへ
+    if hasattr(request.user, 'credentials'):
+        return redirect('firstApp:top')
 
-class InputMailAddress(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings.CLIENT_SECRET, settings.SCOPES
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    authorization_url, state = flow.authorization_url(
+        approval_prompt='force',
+        access_type='offline',
+        include_granted_scopes='true')
+    request.session['state'] = state
+    return redirect(authorization_url)
 
-        input_form = MailForm()
+@login_required
+def callback(request):
+    # 既に認証済みならトップページへ
+    if hasattr(request.user, 'credentials'):
+        return redirect('firstApp:top')
 
-        d = {
-            'form':input_form
-            }
-
-        return render(request, 'firstApp/input_mail_address.html', d)
-
-
-class Start(LoginRequiredMixin, View):
-
-    def get(self, request, *args, **kwargs):
-        """ 多分何もすることない """
+    state = request.session['state']
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings.CLIENT_SECRET, settings.SCOPES, state=state
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    authorization_response = request.build_absolute_uri()
+    try:
+        flow.fetch_token(authorization_response=authorization_response)
+    except MissingCodeError:
+        # 直接/callback へアクセスされた場合は、ここ
         pass
-        return None
-
-    def post(self, request, *args, **kwargs):
-        """ POSTのリクエストが来たとき """
-        """ 多分メールアドレスが入力されたときの処理になる """
-
-        return render(request, 'firstApp/time_display.html', d)
-
-class TimeDisplay(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'firstApp/time_display.html', {})
-
+    else:
+       request.session['credentials'] = {
+            'token': flow.credentials.token,
+            'refresh_token': flow.credentials.refresh_token,
+            'token_uri': flow.credentials.token_uri,
+            'client_id': flow.credentials.client_id,
+            'client_secret': flow.credentials.client_secret,
+            'scopes': flow.credentials.scopes,
+        }
+    return redirect('firstApp:top')
 
 
+@login_required
+def revoke(request):
+    # 認証済みアカウントならば、認証情報の取り消し
+    if 'credentials' in request.session:
+        credentials = google.oauth2.credentials.Credentials(**request.session['credentials'])
+        requests.post(
+            'https://accounts.google.com/o/oauth2/revoke',
+            params={'token': credentials.token},
+            headers={'content-type': 'application/x-www-form-urlencoded'}
+        )
+        del request.session['credentials']  # セッションも破棄する
+    return redirect('firstApp:top')
