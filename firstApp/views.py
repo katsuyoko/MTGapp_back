@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
 from django.utils.safestring import mark_safe
 
+
 import random
 from datetime import datetime, timedelta
 
