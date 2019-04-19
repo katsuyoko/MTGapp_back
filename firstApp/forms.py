@@ -9,3 +9,13 @@ class LoginForm(AuthenticationForm):
             field.widget.attrs['placeholder'] = field.label
 
 
+class MailForm(forms.Form):
+    mail_address = forms.CharField(
+        label = 'Mail Address',
+        max_length = 100,
+        required = True,
+        widget = forms.TextInput()
+    )
+
+
+

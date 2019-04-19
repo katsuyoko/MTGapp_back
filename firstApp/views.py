@@ -31,4 +31,34 @@ class Logout(LoginRequiredMixin, LogoutView):
     template_name = 'firstApp/logout.html'
 
 
+class InputMailAddress(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+
+        input_form = MailForm()
+
+        d = {
+            'form':input_form
+            }
+
+        return render(request, 'firstApp/input_mail_address.html', d)
+
+
+class Start(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        """ 多分何もすることない """
+        pass
+        return None
+
+    def post(self, request, *args, **kwargs):
+        """ POSTのリクエストが来たとき """
+        """ 多分メールアドレスが入力されたときの処理になる """
+
+        return render(request, 'firstApp/time_display.html', d)
+
+class TimeDisplay(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'firstApp/time_display.html', {})
+
+
 

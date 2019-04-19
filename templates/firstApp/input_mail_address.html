@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action='' method="POST">
+    {% csrf_token %}
+    {{ form.mail_address }}
+
+    {% url 'firstApp:mail_address' as mail %}
+    <input type='submit' name="submit" value="enter">
+</form>
+
+{% endblock %}
+
+
+
+
+
