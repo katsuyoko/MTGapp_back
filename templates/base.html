@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <!-- Required meta tag -->
+    <meta charset='utf-8'>
+    <meta name="viewpoint" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+        integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'my_stylesheet.css' %}">
+        <title> ラベリングツール </title>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS, then Chart.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+
+</head>
+
+<body>
+    <!-- ナビバー -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'firstApp:top' %}">PCL labeling tool</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggle-icon"></span>
+        </button>
+
+        {% if user.is_authenticated %}
+        <div class="collapse navbar-collapse justify-content-around" id="navbarSupprotedContent">
+            <ul class="navbar-nav">
+                <li class="nav-text"><div style="font-size:18px">user name :{{ user }}</div></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-item nav-link" href="{% url 'firstApp:top' %}">選択画面へ</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-item nav-link" href="{% url 'firstApp:logout' %}">ログアウト</a></li>
+            </ul>
+        </div>
+        {% else %}
+        <div class="collapse navbar-collapse" id="navbarSupprotedContent">
+            <ul class="navbar-nav">
+                <li class="navbar-item"><a class="nav-item vab-link" href="{% url 'firstApp:login' %}">ようこそ　ログインしてください</a></li>
+            </ul>
+        </div>
+        {% endif %}
+    </nav>
+
+    <!-- メインコンテント -->
+    <div class="container mt-3">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+

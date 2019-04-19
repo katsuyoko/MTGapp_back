@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <center>
+        <h1 style="margin:0;"> トップです</h1>
+        {% url 'firstApp:logout' as logout %}
+        <input type="button" class="select_button" onclick="location.href='{{logout}}'" value = "Logout"></input>
+
+    </center>
+{% endblock %}
+
+
+
+
