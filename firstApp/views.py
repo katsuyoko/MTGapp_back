@@ -43,7 +43,7 @@ class InputMailAddress(LoginRequiredMixin, View):
         return render(request, 'firstApp/input_mail_address.html', d)
 
 
-class Start(LoginRequiredMixin, View):
+class Confilm(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """ 多分何もすることない """
