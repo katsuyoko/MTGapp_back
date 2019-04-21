@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<center>
+{{calendar_info.num_attendees}}人<br>
+{{calendar_info.start}}から<br>
+{{calendar_info.end}}まで<br>
+{{calendar_info.summary}}についてですね<br>
+
+{% url 'firstApp:time_display' as time_display %}
+<input type='button' onclick="location.href='{{time_display}}'" value="OK"></input>
+
+</center>
+{% endblock %}

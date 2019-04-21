@@ -1,14 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<form action='' method="POST">
-    {% csrf_token %}
-    {{ form.mail_address }}
+<center>
 
-    {% url 'firstApp:mail_address' as mail %}
-    <input type='submit' name="submit" value="enter">
-</form>
+    <h1> メールアドレスを入力してね</h1>
+    {% url 'firstApp:confilm' as confilm %}
+    <form action='{{confilm}}' method="POST">
+        {% csrf_token %}
+        {{ form.mail_address }}
 
+        {% url 'firstApp:mail_address' as mail %}
+        <input type='submit' name="submit" value="enter">
+    </form>
+
+</center>
 {% endblock %}
 
 
