@@ -2,9 +2,10 @@
 {% block content %}
 
 <center>
-{{num_of_people}}人<br>
-{{calender_info.start}}から<br>
-{{calender_info.end}}までですね<br>
+{{calendar_info.num_attendees}}人<br>
+{{calendar_info.start}}から<br>
+{{calendar_info.end}}まで<br>
+{{calendar_info.summary}}についてですね<br>
 
 {% url 'firstApp:time_display' as time_display %}
 <input type='button' onclick="location.href='{{time_display}}'" value="OK"></input>
