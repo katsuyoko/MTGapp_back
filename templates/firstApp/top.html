@@ -4,7 +4,8 @@
 {% if user.credentials %}
 <p>認証完了!!</p>
 {% else %}
-<p>先に<a href="{% url 'gservice:auth' %}">認証ページ</a>で認証を済ましてください。</p>
+<p>先に<a href="{% url 'firstApp:auth' %}">認証ページ</a>で認証を済ましてください。</p>
+<p>先に<a href="{% url 'firstApp:auth' %}">データ</a>を取得してください。</p>
 {% endif %}
 
 {% endblock %}

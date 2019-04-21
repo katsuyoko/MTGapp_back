@@ -27,6 +27,18 @@ class Top(LoginRequiredMixin, generic.TemplateView):
     """トップページ"""
     template_name = 'firstApp/top.html'
 
+class Top2(LoginRequiredMixin, View):
+    """トップページ"""
+    def get(self, request, *args, **kwargs):
+
+        info = request.session['credentials']
+
+        d = {
+            'info':info
+        }
+
+        return render(request,'firstApp/top2.html',d)
+
 class Login(LoginView):
     """ログインページ"""
     form_class = LoginForm
@@ -79,7 +91,7 @@ def callback(request):
             'client_secret': flow.credentials.client_secret,
             'scopes': flow.credentials.scopes,
         }
-    return redirect('firstApp:top')
+    return redirect('firstApp:top2')
 
 
 @login_required
@@ -94,3 +106,17 @@ def revoke(request):
         )
         del request.session['credentials']  # セッションも破棄する
     return redirect('firstApp:top')
+
+
+def get(request):
+    # 既に認証済みならトップページへ
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings.CLIENT_SECRET, settings.SCOPES
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    authorization_url, state = flow.authorization_url(
+        approval_prompt='force',
+        access_type='offline',
+        include_granted_scopes='true')
+    request.session['state'] = state
+    return redirect(authorization_url)
