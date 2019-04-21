@@ -8,7 +8,7 @@ urlpatterns = [
     path('top', views.Top.as_view(), name='top'),
     path('logout', views.Logout.as_view(), name='logout'),
     path('input_address', views.InputMailAddress.as_view(), name='mail_address'),
-    path('confirm', views.Start.as_view(), name='confilm'),
+    path('confilm', views.Confilm.as_view(), name='confilm'),
     path('time_display', views.TimeDisplay.as_view(), name='time_display'),
 ]
 
