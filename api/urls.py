@@ -1,0 +1,9 @@
+from django.urls import path
+from api import views
+
+app_name = 'api'
+
+urlpatterns = [
+    path('calendar_info/<str:mail_address>/', views.get_calendar_info, name='calInfo'),
+    # path('save/', views.save_info, name='save'),
+]
