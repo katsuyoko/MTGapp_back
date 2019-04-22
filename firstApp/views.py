@@ -124,7 +124,7 @@ class GoogleCalendarAPI():
         # NOTE とりあえず会議室のアドレスに自動的になるようにしてます
         self.target_address = "zozo.com_343538343931333532@resource.calendar.google.com"
         home_dir = os.path.expanduser('~')
-        with open(os.path.joint(home_dir, 'flags.pickle'), 'rb') as f:
+        with open(os.path.join(home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
     def get_credentials(self):
