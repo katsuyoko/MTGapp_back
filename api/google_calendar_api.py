@@ -21,20 +21,22 @@ class GoogleCalendarAPI():
         # self.target_address = target_address
         # self.flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
 
+        self.home_dir = os.path.expanduser('~')
 
         # NOTE とりあえず会議室のアドレスに自動的になるようにしてます
         self.target_address = "zozo.com_343538343931333532@resource.calendar.google.com"
-        with open('/home/katsuya/flags.pickle', 'rb') as f:
+        with open(os.path.join(self.home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
     def get_credentials(self):
 
+
         SCOPES = 'https://www.googleapis.com/auth/calendar.readonry'
-        CLIENT_SECRET_FILE = '/home/katsuya/workspace/client_secret.json'
+        # CLIENT_SECRET_FILE = '/home/katsuya/workspace/client_secret.json'
+        CLIENT_SECRET_FILE = os.path.join(self.home_dir, 'client_secret.json')
         APPLICARION_NAME = 'Google Calendar API Python Quickstart'
 
-        home_dir = os.path.expanduser('~')
-        credential_dir = os.path.join(home_dir, '.credentials')
+        credential_dir = os.path.join(self.home_dir, '.credentials')
         if not os.path.exists(credential_dir):
             os.makedirs(credential_dir)
         credential_path = os.path.join(credential_dir,
