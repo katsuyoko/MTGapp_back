@@ -18,13 +18,11 @@ class GoogleCalendarAPI():
 
     def __init__(self, target_address='primary'):
 
-        # self.target_address = target_address
-        # self.flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-
+        self.target_address = target_address
         self.home_dir = os.path.expanduser('~')
 
         # NOTE とりあえず会議室のアドレスに自動的になるようにしてます
-        self.target_address = "zozo.com_343538343931333532@resource.calendar.google.com"
+        # self.target_address = "zozo.com_343538343931333532@resource.calendar.google.com"
         with open(os.path.join(self.home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
@@ -60,7 +58,7 @@ class GoogleCalendarAPI():
         now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
         eventsResult = service.events().list(
             calendarId=self.target_address, timeMin=now,
-            maxResults=1, singleEvents=True,
+            maxResults=10, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
 

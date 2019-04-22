@@ -27,7 +27,7 @@ def _response_json(request, json_str, status):
     else:
         response = HttpResponse(
             json_str, content_type='application/javascript; charset=UTF-8', status=status)
-
+    response['Access-Control-Allow-Origin'] = '*'
     return response
 
 
@@ -38,27 +38,33 @@ def get_calendar_info(request, mail_address):
     status = None
 
     gca = GCA(mail_address).get_schedules()
-    info_dict = gca[0]
+    # info_dict = gca[0]
+    
+    configs = {}
+    configs['a'] = []
 
-    # 時間の抽出
-    start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
-    end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
+    for info_dict in gca:
+        # 時間の抽出
+        start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
+        end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
 
-    # 参加人数の抽出
-    num_attendees = len(info_dict['attendees']) -1
+        # 参加人数の抽出
+        num_attendees = len(info_dict['attendees']) -1
 
-    # 会議概要の抽出
-    summary = info_dict['summary']
+        # 会議概要の抽出
+        summary = info_dict['summary']
 
 
-    config = {}
-    config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
-    config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':info_dict['end']['dateTime']}
-    config['summary'] = summary
-    config['attendees'] = {
-            'num': num_attendees,
-            }
-    json_str = json.dumps(config, ensure_ascii=False, indent=2)
+        config = {}
+        config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
+        config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':info_dict['end']['dateTime']}
+        config['summary'] = summary
+        config['attendees'] = {
+                'num': num_attendees,
+                }
+        configs['a'].append(config)
+
+    json_str = json.dumps(configs, ensure_ascii=False, indent=2)
 
     return _response_json(request=request, json_str=json_str, status=status)
 
