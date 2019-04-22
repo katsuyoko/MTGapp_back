@@ -98,7 +98,7 @@ def auth(request):
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
-
+    return redirect('firstApp:top2')
 
 @login_required
 def callback(request):
