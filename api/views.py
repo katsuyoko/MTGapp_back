@@ -47,6 +47,9 @@ def get_calendar_info(request, mail_address):
     # 参加人数の抽出
     num_attendees = len(info_dict['attendees']) -1
 
+    num_attendees_rm_resource = len(info_dict['attendees']) - len([d.get('resource') for d in info_dict['attendees'] if d.get('resource')])
+    
+
     # 会議概要の抽出
     summary = info_dict['summary']
 
@@ -56,7 +59,7 @@ def get_calendar_info(request, mail_address):
     config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':info_dict['end']['dateTime']}
     config['summary'] = summary
     config['attendees'] = {
-            'num': num_attendees,
+            'num': num_attendees, 'num_people': num_attendees_rm_resource
             }
     json_str = json.dumps(config, ensure_ascii=False, indent=2)
 
