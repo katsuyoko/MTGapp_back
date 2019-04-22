@@ -16,10 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from secondApp.urls import router as secondApp_router
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('firstApp/', include('firstApp.urls')),
-    path('api/', include(secondApp_router.urls)),
+    path('api/', include('api.urls')),
 ]
