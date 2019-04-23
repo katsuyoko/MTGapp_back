@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
 from django.utils.safestring import mark_safe
+import requests
 
 import random
 from datetime import datetime, timedelta
@@ -29,6 +30,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import google.oauth2
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -64,6 +66,21 @@ def auth(request):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
+    
+    if 'credentials' in request.session:
+        return redirect('firstApp:top2')
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings.CLIENT_SECRET, settings.SCOPES
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    authorization_url, state = flow.authorization_url(
+        approval_prompt='force',
+        access_type='offline',
+        include_granted_scopes='true')
+    request.session['state'] = state
+    return redirect(authorization_url)
+
+
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -98,12 +115,12 @@ def auth(request):
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
-    return redirect('firstApp:top2')
+    return redirect('firstApp:callback')
 
 @login_required
 def callback(request):
     # 既に認証済みならトップページへ
-    if hasattr(request.user, 'credentials'):
+    if 'credentials' in request.session:
         return redirect('firstApp:top')
 
     state = request.session['state']
