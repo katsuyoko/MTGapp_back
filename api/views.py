@@ -3,12 +3,16 @@ from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.core import serializers
 from django.db.models import Sum, Count, Q
 
+import os
+import re
 import sys
 import json
 import collections
 import csv
 import random
 import  datetime
+import requests
+from bs4 import BeautifulSoup 
 
 from .google_calendar_api import GoogleCalendarAPI as GCA
 
@@ -63,3 +67,48 @@ def get_calendar_info(request, mail_address):
     return _response_json(request=request, json_str=json_str, status=status)
 
 
+def get_item_info(request, price):
+
+    p_pris = price - 100
+    p_prie = price
+    url = "https://zozo.jp/category/jacket-outerwear/?p_pris={}&p_prie={}"\
+        .format(p_pris, p_prie)
+
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content)
+    items = soup.select("#searchResultList > li")
+    item = items[0]
+
+    # 商品の値段
+    price = item.find('div', class_="catalog-price-amount").text
+
+    # 商品画像のURL
+    img_url = item.find('img')['data-src']
+    # 画像サイズを大きくする。
+    # 'https://c.imgz.jp/012/12345678/01234567B_3_D_215.jpg'
+    # -> 'https://c.imgz.jp/012/12345678/01234567B_3_D_500.jpg'
+    img_url = re.sub("D_[0-9]{3}.jpg", "D_500.jpg", img_url)
+
+    # ブランド
+    brand = item.find('div', class_='catalog-h').text
+
+    # 商品名
+    rel_url = item.find('a', class_='catalog-link')['href'].lstrip('/')
+    item_detail_url = os.path.join('https://zozo.jp', rel_url)
+    item_detail_url
+    res_detail = requests.get(item_detail_url)
+    soup_detail = BeautifulSoup(res_detail.content)
+    name = soup_detail.find('h1').text
+
+    config = {}
+    config['item'] = {
+        'price': price,
+        'img_url': img_url,
+        'brand': brand,
+        'name': name,
+    }
+    json_str = json.dumps(config, ensure_ascii=False, indent=2)
+
+    status = None
+
+    return _response_json(request=request, json_str=json_str, status=status)
