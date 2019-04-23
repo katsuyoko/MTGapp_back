@@ -51,19 +51,25 @@ def get_calendar_info(request, mail_address):
         start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
         end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
 
+        members = []
         if 'attendees' in info_dict.keys():
             num_attendees = 0
             # 参加人数の抽出
-            for candidate in indfo_dict['attendees']:
+            for candidate in info_dict['attendees']:
                 if '@zozo.com' in candidate['email']:
                     num_attendees += 1
+                    members.append(candidate['email'].split('@')[0])
         else:
             num_attendees = 1
+            members.append(info_dict['organizer']['email'].split('@')[0])
 
         # 会議概要の抽出
         title = info_dict['summary']
 
         # アジェンダの抽出
+        
+
+
 
 
         config = {}
@@ -72,6 +78,7 @@ def get_calendar_info(request, mail_address):
         config['title'] = title
         config['attendees'] = {
                 'num': num_attendees,
+                'menbers': members
                 }
         configs['events'].append(config)
 
