@@ -44,6 +44,11 @@ def get_calendar_info(request, mail_address):
 
     gca = GCA(mail_address).get_schedules()
 
+    if gca is None:
+        json_str = json.dumps({}, ensure_ascii=False, indent=2)
+
+        return _response_json(request=request, json_str=json_str, status=status)
+
     configs = {}
     configs['events'] = []
 
@@ -55,7 +60,7 @@ def get_calendar_info(request, mail_address):
         if 'attendees' in info_dict.keys():
             num_attendees = 0
             # 参加人数の抽出
-            for candidate in indfo_dict['attendees']:
+            for candidate in info_dict['attendees']:
                 if '@zozo.com' in candidate['email']:
                     num_attendees += 1
         else:
