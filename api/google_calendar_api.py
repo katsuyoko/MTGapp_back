@@ -55,14 +55,21 @@ class GoogleCalendarAPI():
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
 
-        now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
+        utc_now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
+        now = datetime.datetime.now()
+        today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
+
+        utc_end = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0, 0)
+        utc_end = utc_end.isoformat() + 'Z'
+
         eventsResult = service.events().list(
-            calendarId=self.target_address, timeMin=now,
+            calendarId=self.target_address, timeMin=utc_now, timeMax=utc_end,
             maxResults=events_num, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
 
         if not events:
-            return '何も帰ってきてないよ'
+            return None
 
         return events
