@@ -83,7 +83,7 @@ def get_calendar_info(request, mail_address):
 
 def get_item_info(request, price):
 
-    url = "https://zozo.jp/search/?p_prie={}&dord=31"\
+    url = "https://zozo.jp/category/underwear/bra/?p_prie={}&dord=31"\
         .format(price)
 
     res = requests.get(url)
