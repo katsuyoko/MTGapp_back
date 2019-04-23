@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import json
+import random
 import collections
 import csv
 import random
@@ -88,7 +89,9 @@ def get_item_info(request, price):
     res = requests.get(url)
     soup = BeautifulSoup(res.content)
     items = soup.select("#searchResultList > li")
-    item = items[6]
+    # PR商品を除く、上位10個
+    items = items[6:16]
+    item = random.choice(items)
 
     # 商品の値段
     price = item.find('div', class_="catalog-price-amount").text
