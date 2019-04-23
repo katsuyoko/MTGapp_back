@@ -69,10 +69,8 @@ def get_calendar_info(request, mail_address):
 
 def get_item_info(request, price):
 
-    p_pris = price - 100
-    p_prie = price
-    url = "https://zozo.jp/category/jacket-outerwear/?p_pris={}&p_prie={}"\
-        .format(p_pris, p_prie)
+    url = "https://zozo.jp/category/jacket-outerwear/?p_prie={}&dord=31"\
+        .format(price)
 
     res = requests.get(url)
     soup = BeautifulSoup(res.content)
