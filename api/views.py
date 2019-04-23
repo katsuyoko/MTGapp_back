@@ -88,44 +88,67 @@ def get_calendar_info(request, mail_address):
     configs['events'] = []
 
     for info_dict in gca:
-        # 時間の抽出
+        ## 時間の抽出
         start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
         end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
 
+        ## プライベート設定への対処
+        # NOTE とりあえず、必要なキーのあるなしで返す要素を変更するようにしてます。
+        # プライベートかどうかは以下の条件分岐でできます。
+        # if 'visibility' in info_dict.keys():
+        #     if info_dict['visibility'] == 'private':
+        #         return 
+        #     else:
+        #         pass
+
+
+        ## 参加人数の抽出
         members = []
         if 'attendees' in info_dict.keys():
             num_attendees = 0
-            # 参加人数の抽出
             for candidate in info_dict['attendees']:
                 if '@zozo.com' in candidate['email']:
                     num_attendees += 1
                     members.append(candidate['email'].split('@')[0])
-        else:
+
+        elif 'organizer' in info_dict.keys():
             num_attendees = 1
             members.append(info_dict['organizer']['email'].split('@')[0])
 
-        # 会議概要の抽出
-        title = info_dict['summary']
-
-        # アジェンダ・要約の抽出
-        soup = BeautifulSoup(info_dict['description'])
-
-        if '<li>' in info_dict['description']:
-            agenda = [e.text for e in soup.find_all('li')]
-            
-            summary = info_dict['description']
-            # '<br>概要<br>あｓｄｊふぁぇりうｊｋｇんｓ<br><ol><li>テスト１, 2h10m</li><li>いちご狩り, 10m</li><li>餅つ, 1h20m</li><li>テスト２, 20m</li></ol>'
-            summary = re.split('<ol>|<ul>', summary)[0]
-            # '<br>概要<br>あｓｄｊふぁぇりうｊｋｇんｓ<br>'
-            summary = summary.replace('<br>', '\n').strip()
-            # '概要\nあｓｄｊふぁぇりうｊｋｇんｓ'
         else:
-            summary_agenda = [e.rstrip() for e in soup.text.split('- ')]
-            summary = summary_agenda[0]
-            agenda = summary_agenda[1:]
-            
-        agenda = [parse_topic_duration(top_dur) for top_dur in agenda]
-        # 'topic1, 1h20m' -> {'topic': 'topic1', 'minutes': 80}
+            num_attendees = 0
+
+        ## 会議タイトルの抽出
+        if 'summary' in info_dict.keys():
+            title = info_dict['summary']
+        else:
+            title = ""
+
+        ## アジェンダ・要約の抽出
+        if 'description' in info_dict.keys():
+            soup = BeautifulSoup(info_dict['description'])
+
+            if '<li>' in info_dict['description']:
+                agenda = [e.text for e in soup.find_all('li')]
+
+                summary = info_dict['description']
+                # '<br>概要<br>会議の概要説明<br><ol><li>トピック１, 2h10m</li><li>トピック２, 10m</li><li>トピック３, 1h20m</li><li>トピック４, 20m</li></ol>'
+                summary = re.split('<ol>|<ul>', summary)[0]
+                # '<br>概要<br>会議の概要説明<br>'
+                summary = summary.replace('<br>', '\n').strip()
+                # '概要\n会議の概要説明'
+            else:
+                summary_agenda = [e.rstrip() for e in soup.text.split('- ')]
+                summary = summary_agenda[0]
+                agenda = summary_agenda[1:]
+
+            agenda = [parse_topic_duration(top_dur) for top_dur in agenda]
+            # 'topic1, 1h20m' -> {'topic': 'topic1', 'minutes': 80}
+
+        else:
+            agenda = []
+            summary = ''
+
 
         config = {}
         config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
