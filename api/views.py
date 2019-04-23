@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import json
+import random
 import collections
 import csv
 import random
@@ -82,13 +83,15 @@ def get_calendar_info(request, mail_address):
 
 def get_item_info(request, price):
 
-    url = "https://zozo.jp/category/jacket-outerwear/?p_prie={}&dord=31"\
+    url = "https://zozo.jp/search/?p_prie={}&dord=31"\
         .format(price)
 
     res = requests.get(url)
     soup = BeautifulSoup(res.content)
     items = soup.select("#searchResultList > li")
-    item = items[6]
+    # PR商品を除く、上位10個
+    items = items[6:16]
+    item = random.choice(items)
 
     # 商品の値段
     price = item.find('div', class_="catalog-price-amount").text
@@ -98,7 +101,7 @@ def get_item_info(request, price):
     # 画像サイズを大きくする。
     # 'https://c.imgz.jp/012/12345678/01234567B_3_D_215.jpg'
     # -> 'https://c.imgz.jp/012/12345678/01234567B_3_D_500.jpg'
-    img_url = re.sub("_[0-9]{3}.jpg", "_500.jpg", img_url)
+    # img_url = re.sub("_[0-9]{3}.jpg", "_500.jpg", img_url)
 
     # ブランド
     brand = item.find('div', class_='catalog-h').text
