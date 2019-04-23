@@ -36,6 +36,40 @@ def _response_json(request, json_str, status):
     return response
 
 
+def hm2m(duration):
+    """
+    Args:
+        duraiton (str):
+            duration string like the format `1h20m`
+    
+    Return:
+        minutes (int)
+    """
+    if 'h' in duration:
+        # '1h20m' -> 1
+        hours = int(duration.split('h')[0])
+        # '1h20m' -> 20
+        duration = duration.split('h')[1]
+        minutes = int(duration.replace('m', ''))
+        return minutes + hours*60
+    else:
+        minutes = int(duration.replace('m', ''))
+        return minutes
+
+
+def parse_topic_duration(topic_duration):
+    topic_duration = re.split(', |,', topic_duration)
+    n = len(topic_duration)
+
+    if n >= 3:
+        topic = ', '.join(topic_duration[:-1])
+    elif n == 2:
+        topic = topic_duration[0]
+
+    minutes = hm2m(topic_duration[-1])
+
+    return {"topic": topic, "minutes": minutes}
+
 
 def get_calendar_info(request, mail_address):
 
@@ -73,11 +107,25 @@ def get_calendar_info(request, mail_address):
         # 会議概要の抽出
         title = info_dict['summary']
 
-        # アジェンダの抽出
-        
+        # アジェンダ・要約の抽出
+        soup = BeautifulSoup(info_dict['description'])
 
-
-
+        if '<li>' in info_dict['description']:
+            agenda = [e.text for e in soup.find_all('li')]
+            
+            summary = info_dict['description']
+            # '<br>概要<br>あｓｄｊふぁぇりうｊｋｇんｓ<br><ol><li>テスト１, 2h10m</li><li>いちご狩り, 10m</li><li>餅つ, 1h20m</li><li>テスト２, 20m</li></ol>'
+            summary = re.split('<ol>|<ul>', summary)[0]
+            # '<br>概要<br>あｓｄｊふぁぇりうｊｋｇんｓ<br>'
+            summary = summary.replace('<br>', '\n').strip()
+            # '概要\nあｓｄｊふぁぇりうｊｋｇんｓ'
+        else:
+            summary_agenda = [e.rstrip() for e in soup.text.split('- ')]
+            summary = summary_agenda[0]
+            agenda = summary_agenda[1:]
+            
+        agenda = [parse_topic_duration(top_dur) for top_dur in agenda]
+        # 'topic1, 1h20m' -> {'topic': 'topic1', 'minutes': 80}
 
         config = {}
         config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
@@ -87,6 +135,8 @@ def get_calendar_info(request, mail_address):
                 'num': num_attendees,
                 'members': members
                 }
+        config['agenda'] = agenda
+        config['summary'] = summary
         configs['events'].append(config)
 
     json_str = json.dumps(configs, ensure_ascii=False, indent=2)
