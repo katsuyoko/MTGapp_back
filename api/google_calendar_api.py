@@ -49,22 +49,33 @@ class GoogleCalendarAPI():
 
         return credentials
 
-    def get_schedules(self, events_num=3):
+    def get_schedules(self, events_num=3, start_time=None):
 
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
 
-        utc_now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
-        now = datetime.datetime.now()
-        today = datetime.datetime.today()
-        utc_end = datetime.datetime(today.year, today.month, today.day, 15, 0, 0)
-        utc_end = utc_end.isoformat() + 'Z'
+        start = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
 
-        print(utc_now)
-        print(utc_end)
+        if start_time == 'today':
+            yesterday = datetime.datetime.today() - datetime.timedelta(days=1)
+            start = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 15, 0, 0)
+            start = start.isoformat() + 'Z'
+
+
+        today = datetime.datetime.today()
+        end = datetime.datetime(today.year, today.month, today.day, 15, 0, 0)
+        end = end.isoformat() + 'Z'
+
+        if start_time == 'tomorrow':
+            tomorrow = today + datetime.timedelta(days=1)
+            end = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 15, 0, 0)
+            end = end.isoformat() + 'Z'
+
+        print(start, end)
+
         eventsResult = service.events().list(
-            calendarId=self.target_address, timeMin=utc_now, timeMax=utc_end,
+            calendarId=self.target_address, timeMin=start, timeMax=end,
             maxResults=events_num, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
