@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import json
+import random
 import collections
 import csv
 import random
@@ -43,6 +44,12 @@ def get_calendar_info(request, mail_address):
 
     gca = GCA(mail_address).get_schedules()
 
+    if gca is None:
+        json_str = json.dumps({}, ensure_ascii=False, indent=2)
+
+        return _response_json(request=request, json_str=json_str, status=status)
+
+    members = []
     configs = {}
     configs['events'] = []
 
@@ -78,7 +85,7 @@ def get_calendar_info(request, mail_address):
         config['title'] = title
         config['attendees'] = {
                 'num': num_attendees,
-                'menbers': members
+                'members': members
                 }
         configs['events'].append(config)
 
@@ -89,44 +96,53 @@ def get_calendar_info(request, mail_address):
 
 def get_item_info(request, price):
 
-    url = "https://zozo.jp/category/jacket-outerwear/?p_prie={}&dord=31"\
-        .format(price)
+    try:
+        url = "https://zozo.jp/search/?p_prie={}&dord=31"\
+            .format(price)
 
-    res = requests.get(url)
-    soup = BeautifulSoup(res.content)
-    items = soup.select("#searchResultList > li")
-    item = items[6]
+        res = requests.get(url)
+        soup = BeautifulSoup(res.content)
+        items = soup.select("#searchResultList > li")
+        # PR商品を除く、上位10個
+        items = items[6:16]
+        item = random.choice(items)
 
-    # 商品の値段
-    price = item.find('div', class_="catalog-price-amount").text
+        # 商品の値段
+        price = item.find('div', class_="catalog-price-amount").text
 
-    # 商品画像のURL
-    img_url = item.find('img')['data-src']
-    # 画像サイズを大きくする。
-    # 'https://c.imgz.jp/012/12345678/01234567B_3_D_215.jpg'
-    # -> 'https://c.imgz.jp/012/12345678/01234567B_3_D_500.jpg'
-    img_url = re.sub("_[0-9]{3}.jpg", "_500.jpg", img_url)
+        # 商品画像のURL
+        img_url = item.find('img')['data-src']
+        # 画像サイズを大きくする。
+        # 'https://c.imgz.jp/012/12345678/01234567B_3_D_215.jpg'
+        # -> 'https://c.imgz.jp/012/12345678/01234567B_3_D_500.jpg'
+        # img_url = re.sub("_[0-9]{3}.jpg", "_500.jpg", img_url)
 
-    # ブランド
-    brand = item.find('div', class_='catalog-h').text
+        # ブランド
+        brand = item.find('div', class_='catalog-h').text
 
-    # 商品名
-    item_detail_url = item.find('a', class_='catalog-link')['href'].lstrip('/')
-    if not item_detail_url.startswith('http'):
-        item_detail_url = os.path.join('https://zozo.jp', item_detail_url)
-    res_detail = requests.get(item_detail_url)
-    soup_detail = BeautifulSoup(res_detail.content)
-    name = soup_detail.find('h1').text
+        # 商品名
+        item_detail_url = item.find('a', class_='catalog-link')['href'].lstrip('/')
+        if not item_detail_url.startswith('http'):
+            item_detail_url = os.path.join('https://zozo.jp', item_detail_url)
+        res_detail = requests.get(item_detail_url)
+        soup_detail = BeautifulSoup(res_detail.content)
+        name = soup_detail.find('h1').text
 
-    config = {}
-    config['item'] = {
-        'price': price,
-        'img_url': img_url,
-        'brand': brand,
-        'name': name,
-    }
-    json_str = json.dumps(config, ensure_ascii=False, indent=2)
+        config = {}
+        config['item'] = {
+            'price': price,
+            'img_url': img_url,
+            'brand': brand,
+            'name': name,
+        }
+        json_str = json.dumps(config, ensure_ascii=False, indent=2)
 
-    status = None
+        status = None
 
-    return _response_json(request=request, json_str=json_str, status=status)
+        return _response_json(request=request, json_str=json_str, status=status)
+
+    except:
+
+        json_str = json.dumps({}, ensure_ascii=False, indent=2)
+
+        return _response_json(request=request, json_str=json_str, status=None)
