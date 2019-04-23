@@ -49,6 +49,7 @@ def get_calendar_info(request, mail_address):
 
         return _response_json(request=request, json_str=json_str, status=status)
 
+    members = []
     configs = {}
     configs['events'] = []
 
@@ -63,8 +64,10 @@ def get_calendar_info(request, mail_address):
             for candidate in info_dict['attendees']:
                 if '@zozo.com' in candidate['email']:
                     num_attendees += 1
+                    members.append(candidate['email'].split('@')[0])
         else:
             num_attendees = 1
+            members.append(info_dict['organizer']['email'].split('@')[0])
 
         # 会議概要の抽出
         title = info_dict['summary']
@@ -78,6 +81,7 @@ def get_calendar_info(request, mail_address):
         config['title'] = title
         config['attendees'] = {
                 'num': num_attendees,
+                'members': members
                 }
         configs['events'].append(config)
 
