@@ -38,8 +38,7 @@ def get_calendar_info(request, mail_address):
     status = None
 
     gca = GCA(mail_address).get_schedules()
-    # info_dict = gca[0]
-    
+
     configs = {}
     configs['events'] = []
 
@@ -48,17 +47,25 @@ def get_calendar_info(request, mail_address):
         start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
         end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
 
-        # 参加人数の抽出
-        num_attendees = len(info_dict['attendees']) -1
+        if 'attendees' in info_dict.keys():
+            num_attendees = 0
+            # 参加人数の抽出
+            for candidate in indfo_dict['attendees']:
+                if '@zozo.com' in candidate['email']:
+                    num_attendees += 1
+        else:
+            num_attendees = 1
 
         # 会議概要の抽出
-        summary = info_dict['summary']
+        title = info_dict['summary']
+
+        # アジェンダの抽出
 
 
         config = {}
         config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
         config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':info_dict['end']['dateTime']}
-        config['summary'] = summary
+        config['title'] = title
         config['attendees'] = {
                 'num': num_attendees,
                 }
