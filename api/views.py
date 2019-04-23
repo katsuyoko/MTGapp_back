@@ -98,7 +98,7 @@ def get_item_info(request, price):
     # 画像サイズを大きくする。
     # 'https://c.imgz.jp/012/12345678/01234567B_3_D_215.jpg'
     # -> 'https://c.imgz.jp/012/12345678/01234567B_3_D_500.jpg'
-    img_url = re.sub("D_[0-9]{3}.jpg", "D_500.jpg", img_url)
+    img_url = re.sub("_[0-9]{3}.jpg", "_500.jpg", img_url)
 
     # ブランド
     brand = item.find('div', class_='catalog-h').text
