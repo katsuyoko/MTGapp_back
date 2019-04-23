@@ -102,7 +102,7 @@ def get_calendar_info(request, mail_address):
         #         pass
 
 
-        ## 参加人数の抽出
+        ## 参加人数と参加者メンバーの抽出
         members = []
         if 'attendees' in info_dict.keys():
             num_attendees = 0
