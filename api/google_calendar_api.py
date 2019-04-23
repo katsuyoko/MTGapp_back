@@ -49,7 +49,7 @@ class GoogleCalendarAPI():
 
         return credentials
 
-    def get_schedules(self):
+    def get_schedules(self, events_num=3):
 
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
@@ -58,7 +58,7 @@ class GoogleCalendarAPI():
         now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
         eventsResult = service.events().list(
             calendarId=self.target_address, timeMin=now,
-            maxResults=10, singleEvents=True,
+            maxResults=events_num, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
 

@@ -41,7 +41,7 @@ def get_calendar_info(request, mail_address):
     # info_dict = gca[0]
     
     configs = {}
-    configs['a'] = []
+    configs['events'] = []
 
     for info_dict in gca:
         # 時間の抽出
@@ -62,7 +62,7 @@ def get_calendar_info(request, mail_address):
         config['attendees'] = {
                 'num': num_attendees,
                 }
-        configs['a'].append(config)
+        configs['events'].append(config)
 
     json_str = json.dumps(configs, ensure_ascii=False, indent=2)
 
