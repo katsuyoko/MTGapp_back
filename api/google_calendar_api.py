@@ -24,7 +24,7 @@ class GoogleCalendarAPI():
         self.home_dir = os.path.expanduser('~')
 
         # NOTE とりあえず会議室のアドレスに自動的になるようにしてます
-        self.target_address = "zozo.com_3630393133343239363435@resource.calendar.google.com"
+        self.target_address = "kaya@zozo.com"
         with open(os.path.join(self.home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
