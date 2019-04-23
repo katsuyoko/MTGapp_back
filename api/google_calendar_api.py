@@ -58,11 +58,11 @@ class GoogleCalendarAPI():
         utc_now = datetime.datetime.utcnow().isoformat() + 'Z' # Z indicates UTC time
         now = datetime.datetime.now()
         today = datetime.datetime.today()
-        tomorrow = today + datetime.timedelta(days=1)
-
-        utc_end = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0, 0)
+        utc_end = datetime.datetime(today.year, today.month, today.day, 15, 0, 0)
         utc_end = utc_end.isoformat() + 'Z'
 
+        print(utc_now)
+        print(utc_end)
         eventsResult = service.events().list(
             calendarId=self.target_address, timeMin=utc_now, timeMax=utc_end,
             maxResults=events_num, singleEvents=True,
