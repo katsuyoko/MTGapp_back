@@ -12,3 +12,5 @@ media
 *.ipynb
 .vscode
 client_id.json
+client_secret.json
+.DS_Store
