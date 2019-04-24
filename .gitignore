@@ -14,3 +14,4 @@ media
 client_id.json
 client_secret.json
 .DS_Store
+migrations
