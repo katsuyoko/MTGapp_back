@@ -57,8 +57,8 @@ def auth(request):
 
 
 def db_has_session_key(session_key):
-    all_session_keys = Credentials.objects.all().values_list('session_key', flat=True) 
-    return session_key in all_session_keys
+    n_hit = len(Credentials.objects.filter(session_key=session_key))
+    return n_hit == 1
 
 
 # @login_required
