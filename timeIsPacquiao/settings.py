@@ -133,6 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 CLIENT_SECRET_FILE = os.path.join(BASE_DIR, 'client_secret.json')
+CLIENT_SECRET_FILE = os.path.join(BASE_DIR, 'client_secret.json')
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 
 if DEBUG:
