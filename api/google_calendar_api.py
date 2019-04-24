@@ -49,7 +49,7 @@ class GoogleCalendarAPI():
 
         return credentials
 
-    def get_schedules(self, events_num=3, start_time=None):
+    def get_schedules(self, events_num=99, start_time=None):
 
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
