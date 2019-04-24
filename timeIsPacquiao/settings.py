@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'api',
     'firstApp',
     'secondApp',
     'rest_framework',
@@ -131,6 +132,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+CLIENT_SECRET_FILE = os.path.join(BASE_DIR, 'client_id.json')
+SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+
+if DEBUG:
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    REDIRECT_URI = 'localhost:8000/api/callback'
+else:
+    pass
+
 STATIC_URL = '/static/'
-LOGIN_URL = 'firstApp;login'
-LOGIN_REDIRECT_URL = 'firstApp:top'
+LOGIN_URL = 'api:top'
+# LOGIN_REDIRECT_URL = ''

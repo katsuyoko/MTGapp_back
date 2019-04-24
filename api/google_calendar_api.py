@@ -5,9 +5,12 @@ import os
 from apiclient import discovery
 from oauth2client import client, tools
 from oauth2client.file import Storage
+# from oauth2client.contrib.django_util.storage import DjangoORMStorage
 
 import datetime
 import pickle
+
+from .models import Credentials
 
 
 ## たぶんpython3系じゃないと動かない、、？
@@ -26,8 +29,7 @@ class GoogleCalendarAPI():
         with open(os.path.join(self.home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
-    def get_credentials(self):
-
+    def get_credentials(self, user):
 
         SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
         # CLIENT_SECRET_FILE = '/home/katsuya/workspace/client_secret.json'
@@ -41,6 +43,7 @@ class GoogleCalendarAPI():
                                        'calendar-python-quickstart.json')
 
         store = Storage(credential_path)
+        # store = DjangoORMStorage(CredentialsModel, 'id', user, 'credential')
         credentials = store.get()
         if not credentials or credentials.invalid:
             flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
@@ -49,9 +52,9 @@ class GoogleCalendarAPI():
 
         return credentials
 
-    def get_schedules(self, events_num=3, start_time=None):
+    def get_schedules(self, user, events_num=3, start_time=None):
 
-        credentials = self.get_credentials()
+        credentials = self.get_credentials(user)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
 

@@ -12,11 +12,83 @@ import collections
 import csv
 import random
 import  datetime
+
 import requests
 from bs4 import BeautifulSoup 
+import google_auth_oauthlib.flow
+from oauthlib.oauth2 import MissingCodeError
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.views import generic
 
 from .google_calendar_api import GoogleCalendarAPI as GCA
+from .models import Credentials
 
+
+class Top(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'api/top.html'
+
+
+# @login_required
+def auth(request):
+    if hasattr(request.user, 'credentials'):
+        return redirect('api:top')
+    
+    # SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+    # CLIENT_SECRET_FILE = os.path.join(os.environ['HOME'], 'client_secret.json')
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings.CLIENT_SECRET_FILE, settings.SCOPES
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    print(flow.redirect_uri)
+    authorization_url, state = flow.authorization_url(
+        approval_prompt='force',
+        access_type='offline',
+        include_granted_scopes='ture',
+    )
+    request.session['state'] = state
+    return redirect(authorization_url)
+
+
+# @login_required
+def callback(request):
+    if hasattr(request.user, 'credentials'):
+        return redirect('api:top')
+
+    SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+    CLIENT_SECRET_FILE = os.path.join(os.environ['HOME'], 'client_secret.json')
+    state = request.session['state']
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        CLIENT_SECRET_FILE, SCOPES
+    )
+    flow.redirect_uri = settings.REDIRECT_URI
+    authorization_response = request.build_absolute_uri()
+    try:
+        flow.fetch_token(authorization_response=authorization_response)
+    except MissingCodeError:
+        pass
+    else:
+        Credentials.objects.create(
+            token=flow.credentials.token,
+            refresh_token=flow.credentials.refresh_token or '',
+            token_uri=flow.credentials.token_uri,
+            client_id=flow.credentials.client_id,
+            client_secret=flow.credentials.client_secret,
+            scopes=flow.credentials.scopes,
+            user=request.user,
+        )
+
+    return redirect('api:top')
+
+
+@login_required
+def revoke(request):
+    if hasattr(request.user, 'credentials'):
+        request.user.credentials.revoke()
+    return redirect('api:top')
 
 
 # JSON をresponseに格納する奴
@@ -76,7 +148,7 @@ def get_calendar_info(request, mail_address):
 
     status = None
 
-    gca = GCA(mail_address).get_schedules()
+    gca = GCA(mail_address).get_schedules(request.user)
 
     if gca is None:
         json_str = json.dumps({}, ensure_ascii=False, indent=2)
