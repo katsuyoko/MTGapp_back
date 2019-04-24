@@ -16,14 +16,13 @@ class Credentials(models.Model):
     client_secret = models.CharField(max_length=255)
     scopes = models.CharField(max_length=255)
     expiry = models.DateTimeField()
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    session_key = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.user
+        return self.session_key
 
     def to_dict(self):
-        return model_to_dict(self, exclude=('id', 'user'))
+        return model_to_dict(self, exclude=('id', 'session_key'))
 
     @property
     def auth(self):
