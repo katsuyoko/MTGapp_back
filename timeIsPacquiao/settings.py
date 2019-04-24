@@ -137,7 +137,8 @@ SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 
 if DEBUG:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    REDIRECT_URI = 'localhost:8000/api/callback'
+    # REDIRECT_URI = 'localhost:8000/api/callback'
+    REDIRECT_URI = 'http://127.0.0.1:8000/api/callback'
 else:
     pass
 

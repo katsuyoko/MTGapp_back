@@ -47,7 +47,7 @@ def auth(request):
     authorization_url, state = flow.authorization_url(
         approval_prompt='force',
         access_type='offline',
-        include_granted_scopes='ture',
+        include_granted_scopes='true',
     )
     request.session['state'] = state
     return redirect(authorization_url)
