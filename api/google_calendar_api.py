@@ -31,24 +31,21 @@ class GoogleCalendarAPI():
 
     def get_credentials(self, user):
 
-        SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-        # CLIENT_SECRET_FILE = '/home/katsuya/workspace/client_secret.json'
-        CLIENT_SECRET_FILE = os.path.join(self.home_dir, 'client_secret.json')
-        APPLICARION_NAME = 'Google Calendar API Python Quickstart'
+        credentials = Credentials.objects.filter(user=user).values()[0]
+        # dict
 
-        credential_dir = os.path.join(self.home_dir, '.credentials')
-        if not os.path.exists(credential_dir):
-            os.makedirs(credential_dir)
-        credential_path = os.path.join(credential_dir,
-                                       'calendar-python-quickstart.json')
+        APPLICATION_NAME = 'Google Calendar API Python Quickstart'
 
-        store = Storage(credential_path)
-        # store = DjangoORMStorage(CredentialsModel, 'id', user, 'credential')
-        credentials = store.get()
-        if not credentials or credentials.invalid:
-            flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-            flow.user_agent = APPLICARION_NAME
-            credentials = tools.run_flow(flow, store, self.flags)
+        credentials = client.OAuth2Credentials(
+            access_token=credentials['token'],
+            client_id=credentials['client_id'],
+            client_secret=credentials['client_secret'],
+            refresh_token=credentials['refresh_token'],
+            token_uri=credentials['token_uri'],
+            scopes=credentials['scopes'],
+            token_expiry=credentials['expiry'],
+            user_agent=APPLICATION_NAME,
+        )
 
         return credentials
 

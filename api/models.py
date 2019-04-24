@@ -15,6 +15,7 @@ class Credentials(models.Model):
     client_id = models.CharField(max_length=255)
     client_secret = models.CharField(max_length=255)
     scopes = models.CharField(max_length=255)
+    expiry = models.DateTimeField()
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
