@@ -80,7 +80,7 @@ def get_calendar_info(request, mail_address):
     if mail_address is None:
         gca = GCA().get_schedules()
     else:
-        gca = GCA(mail_address).get_schedules()
+        gca = GCA(mail_address).get_schedules(start_time='today')
 
     if gca is None:
         json_str = json.dumps({}, ensure_ascii=False, indent=2)
