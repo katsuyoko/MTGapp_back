@@ -72,7 +72,7 @@ def parse_topic_duration(topic_duration):
     return {"topic": topic, "minutes": minutes}
 
 
-def get_calendar_info(request, mail_address=None):
+def get_calendar_info(request, mail_address):
 
 
     status = None
