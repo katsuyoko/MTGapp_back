@@ -34,3 +34,9 @@ models.Credentials.objects.all().delete()
 # 確認
 models.Credentials.objects.all().values()
 ```
+
+もしくは、
+
+```py
+run clear_creds_in_db.py
+```

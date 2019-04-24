@@ -56,9 +56,14 @@ def auth(request):
     return _response_json(request=request, json_str=json_str, status=None)
 
 
+def db_has_session_key(session_key):
+    all_session_keys = Credentials.objects.all().values_list('session_key', flat=True) 
+    return session_key in all_session_keys
+
+
 # @login_required
 def callback(request):
-    if hasattr(request.user, 'credentials'):
+    if db_has_session_key(request.session.session_key):
         return redirect('api:calInfo')
 
     SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
@@ -81,7 +86,7 @@ def callback(request):
             client_secret=flow.credentials.client_secret,
             scopes=flow.credentials.scopes,
             expiry=flow.credentials.expiry or None,
-            user=request.user,
+            session_key=request.session.session_key,
         )
 
     return redirect('api:calInfo')
@@ -147,16 +152,16 @@ def parse_topic_duration(topic_duration):
 
 
 def get_calendar_info(request, mail_address=None):
-    if not hasattr(request.user, 'credentials'):
+    if not db_has_session_key(request.session.session_key):
         return redirect('api:auth')
 
     status = None
 
 
     if mail_address is None:
-        gca = GCA().get_schedules(request.user)
+        gca = GCA().get_schedules(request.session.session_key)
     else:
-        gca = GCA(mail_address).get_schedules(request.user)
+        gca = GCA(mail_address).get_schedules(request.session.session_key)
 
     if gca is None:
         json_str = json.dumps({}, ensure_ascii=False, indent=2)

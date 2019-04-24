@@ -29,9 +29,9 @@ class GoogleCalendarAPI():
         with open(os.path.join(self.home_dir, 'flags.pickle'), 'rb') as f:
             self.flags = pickle.load(f)
 
-    def get_credentials(self, user):
+    def get_credentials(self, session_key):
 
-        credentials = Credentials.objects.filter(user=user).values()[0]
+        credentials = Credentials.objects.filter(session_key=session_key).values()[0]
         # dict
 
         APPLICATION_NAME = 'Google Calendar API Python Quickstart'
@@ -49,9 +49,9 @@ class GoogleCalendarAPI():
 
         return credentials
 
-    def get_schedules(self, user, events_num=3, start_time=None):
+    def get_schedules(self, session_key, events_num=3, start_time=None):
 
-        credentials = self.get_credentials(user)
+        credentials = self.get_credentials(session_key)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
 
