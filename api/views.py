@@ -29,8 +29,7 @@ from .models import Credentials
 
 
 class Top(LoginRequiredMixin, generic.TemplateView):
-    template_name = 'api/top.html'
-
+    template_name = 'api/top.html' 
 
 # @login_required
 def auth(request):

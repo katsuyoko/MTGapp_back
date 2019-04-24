@@ -2,7 +2,7 @@
 {% block content %}
 
 {% if user.credentials %}
-<p>認証完了!!</p>
+<p>認証完了!!&nbsp;&nbsp;<a href="{% url 'api:auth' %}">会議を開始する</a></p>
 {% else %}
 <p>先に<a href="{% url 'api:auth' %}">認証ページ</a>で認証を済ましてください。</p>
 {% endif %}
