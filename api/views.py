@@ -58,6 +58,7 @@ def hm2m(duration):
 
 
 def parse_topic_duration(topic_duration):
+
     topic_duration = re.split(', |,', topic_duration)
     n = len(topic_duration)
 
@@ -139,22 +140,27 @@ def get_calendar_info(request, mail_address):
         if 'description' in info_dict.keys():
             soup = BeautifulSoup(info_dict['description'])
 
-            if '<li>' in info_dict['description']:
-                agenda = [e.text for e in soup.find_all('li')]
+            try:
+                if '<li>' in info_dict['description']:
+                    agenda = [e.text for e in soup.find_all('li')]
 
+                    summary = info_dict['description']
+                    # '<br>概要<br>会議の概要説明<br><ol><li>トピック１, 2h10m</li><li>トピック２, 10m</li><li>トピック３, 1h20m</li><li>トピック４, 20m</li></ol>'
+                    summary = re.split('<ol>|<ul>', summary)[0]
+                    # '<br>概要<br>会議の概要説明<br>'
+                    summary = summary.replace('<br>', '\n').strip()
+                    # '概要\n会議の概要説明'
+                else:
+                    summary_agenda = [e.rstrip() for e in soup.text.split('- ')]
+                    summary = summary_agenda[0]
+                    agenda = summary_agenda[1:]
+
+                agenda = [parse_topic_duration(top_dur) for top_dur in agenda]
+                # 'topic1, 1h20m' -> {'topic': 'topic1', 'minutes': 80}
+
+            except:
+                aggenda = []
                 summary = info_dict['description']
-                # '<br>概要<br>会議の概要説明<br><ol><li>トピック１, 2h10m</li><li>トピック２, 10m</li><li>トピック３, 1h20m</li><li>トピック４, 20m</li></ol>'
-                summary = re.split('<ol>|<ul>', summary)[0]
-                # '<br>概要<br>会議の概要説明<br>'
-                summary = summary.replace('<br>', '\n').strip()
-                # '概要\n会議の概要説明'
-            else:
-                summary_agenda = [e.rstrip() for e in soup.text.split('- ')]
-                summary = summary_agenda[0]
-                agenda = summary_agenda[1:]
-
-            agenda = [parse_topic_duration(top_dur) for top_dur in agenda]
-            # 'topic1, 1h20m' -> {'topic': 'topic1', 'minutes': 80}
 
         else:
             agenda = []
