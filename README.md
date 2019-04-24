@@ -11,8 +11,11 @@ $ python manage.py runserver
 
 ## Goolge APIs Console にて client_secret を発行
 
-- **バックエンド → タイプ：その他**
-- フロントエンド → タイプ：ウェブアプリケーション
+- [Goolge Developers Console](https://console.developers.google.com/apis/dashboard) にアクセス。
+- 左上の▼で「**MTGapp**」プロジェクトを選択。
+- 認証情報を作成。
+    - **バックエンド → タイプ：その他**
+    - フロントエンド → タイプ：ウェブアプリケーション
 
 ## credentials をセッション管理で保存している DB から削除
 
