@@ -11,3 +11,4 @@ media
 
 *.ipynb
 .vscode
+client_secret.json
