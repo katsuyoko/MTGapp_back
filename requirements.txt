@@ -3,5 +3,9 @@ django-rest-framework
 httplib2
 apiclient
 google-api-python-client
-oauth2client
+#oauth2client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
 django-cors-headers
+requests

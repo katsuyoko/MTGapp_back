@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user.credentials %}
+<p>認証完了!!</p>
+{% else %}
+<p>先に<a href="{% url 'api:auth' %}">認証ページ</a>で認証を済ましてください。</p>
+{% endif %}
+
+{% endblock %}
