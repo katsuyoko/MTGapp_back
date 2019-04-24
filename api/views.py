@@ -34,9 +34,6 @@ class Top(LoginRequiredMixin, generic.TemplateView):
 
 # @login_required
 def auth(request):
-    if hasattr(request.user, 'credentials'):
-        return redirect('api:calInfo')
-    
     # SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
     # CLIENT_SECRET_FILE = os.path.join(os.environ['HOME'], 'client_secret.json')
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
@@ -50,7 +47,13 @@ def auth(request):
         include_granted_scopes='true',
     )
     request.session['state'] = state
-    return redirect(authorization_url)
+
+    config = {
+        'authorization_url': authorization_url,
+    }
+    json_str = json.dumps(config, ensure_ascii=False, indent=2)
+
+    return _response_json(request=request, json_str=json_str, status=None)
 
 
 # @login_required
@@ -144,7 +147,8 @@ def parse_topic_duration(topic_duration):
 
 
 def get_calendar_info(request, mail_address=None):
-
+    if not hasattr(request.user, 'credentials'):
+        return redirect('api:auth')
 
     status = None
 
