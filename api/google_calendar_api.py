@@ -29,7 +29,7 @@ class GoogleCalendarAPI():
     def get_credentials(self):
 
 
-        SCOPES = 'https://www.googleapis.com/auth/calendar.readonry'
+        SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
         # CLIENT_SECRET_FILE = '/home/katsuya/workspace/client_secret.json'
         CLIENT_SECRET_FILE = os.path.join(self.home_dir, 'client_secret.json')
         APPLICARION_NAME = 'Google Calendar API Python Quickstart'
