@@ -71,12 +71,15 @@ def parse_topic_duration(topic_duration):
     return {"topic": topic, "minutes": minutes}
 
 
-def get_calendar_info(request, mail_address):
+def get_calendar_info(request, mail_address=None):
 
 
     status = None
 
-    gca = GCA(mail_address).get_schedules()
+    if mail_address is None:
+        gca = GCA().get_schedules(request.user)
+    else:
+        gca = GCA(mail_address).get_schedules(request.user)
 
     if gca is None:
         json_str = json.dumps({}, ensure_ascii=False, indent=2)
