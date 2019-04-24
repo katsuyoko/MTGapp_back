@@ -35,7 +35,7 @@ class Top(LoginRequiredMixin, generic.TemplateView):
 # @login_required
 def auth(request):
     if hasattr(request.user, 'credentials'):
-        return redirect('api:top')
+        return redirect('api:calInfo')
     
     # SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
     # CLIENT_SECRET_FILE = os.path.join(os.environ['HOME'], 'client_secret.json')
@@ -56,7 +56,7 @@ def auth(request):
 # @login_required
 def callback(request):
     if hasattr(request.user, 'credentials'):
-        return redirect('api:top')
+        return redirect('api:calInfo')
 
     SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
     state = request.session['state']
@@ -80,7 +80,7 @@ def callback(request):
             user=request.user,
         )
 
-    return redirect('api:top')
+    return redirect('api:calInfo')
 
 
 @login_required
