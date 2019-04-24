@@ -165,8 +165,19 @@ def get_calendar_info(request, mail_address=None):
 
     for info_dict in gca:
         ## 時間の抽出
-        start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
-        end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
+        print('#### ', info_dict['start'])
+        if 'dateTime' in info_dict['start'].keys():
+            start = datetime.datetime.strptime(info_dict['start']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
+            end = datetime.datetime.strptime(info_dict['end']['dateTime'][:-6], '%Y-%m-%dT%H:%M:%S')
+            utc_s = info_dict['start']['dateTime']
+            utc_e = info_dict['end']['dateTime']
+
+        else:
+            today = datetime.datetime.today()
+            start = datetime.datetime(today.year, today.month, today.day, 8, 0, 0)
+            end = datetime.datetime(today.year, today.month, today.day, 20, 0, 0)
+            utc_s = start.strftime('%Y-%m-%dT%H:%M:%S+09:00')
+            utc_e = end.strftime('%Y-%m-%dT%H:%M:%S+09:00')
 
         ## プライベート設定への対処
         # NOTE とりあえず、必要なキーのあるなしで返す要素を変更するようにしてます。
@@ -178,7 +189,7 @@ def get_calendar_info(request, mail_address=None):
         #         pass
 
 
-        ## 参加人数の抽出
+        ## 参加人数と参加者メンバーの抽出
         members = []
         if 'attendees' in info_dict.keys():
             num_attendees = 0
@@ -227,8 +238,8 @@ def get_calendar_info(request, mail_address=None):
 
 
         config = {}
-        config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':info_dict['start']['dateTime']}
-        config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':info_dict['end']['dateTime']}
+        config['start'] = {'year':start.year, 'month':start.month, 'day':start.day, 'hour':start.hour, 'minute':start.minute, 'utc':utc_s}
+        config['end'] = {'year':end.year, 'month':end.month, 'day':end.day, 'hour':end.hour, 'minute':end.minute, 'utc':utc_e}
         config['title'] = title
         config['attendees'] = {
                 'num': num_attendees,
