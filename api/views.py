@@ -59,10 +59,9 @@ def callback(request):
         return redirect('api:top')
 
     SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-    CLIENT_SECRET_FILE = os.path.join(os.environ['HOME'], 'client_secret.json')
     state = request.session['state']
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRET_FILE, SCOPES
+        settings.CLIENT_SECRET_FILE, settings.SCOPES
     )
     flow.redirect_uri = settings.REDIRECT_URI
     authorization_response = request.build_absolute_uri()
